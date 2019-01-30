@@ -19,7 +19,7 @@ const login = (req, res, next) => {
                 email: user.email
             }
             const token = jwt.sign(signUser, env.authSecret, {
-                expiresIn: "1 day"
+                expiresIn: 60
             })
 
             res.json({
@@ -73,4 +73,11 @@ const signup = (req, res, next) => {
     })
 }
 
-module.exports = { login, signup }
+const validateToken = (req, res, next) => {
+    const token = req.body.access_token || ''
+    jwt.verify(token, env.authSecret, function(err, decoded) {
+        return res.status(200).send({valid: !err})
+    })
+}
+
+module.exports = { login, signup, validateToken }
